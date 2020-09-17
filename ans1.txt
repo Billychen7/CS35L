@@ -1,0 +1,64 @@
+William Chen
+405-131-881
+
+1. command used: man -k [word] 
+	 Word is the specific word that we are looking for. This was found by looking through man man to find the command that matched.
+
+2./usr/bin/mv
+	command used: which mv
+  /usr/bin/sh
+	command used: which sh
+
+3./usr/bin/ar     This command creates, modifies, and extracts from archives
+  /usr/bin/pr     This command converts text files from printing
+  /usr/bin/tr     This command translates or deletes characters
+command used: find /user/bin/?r 
+The ? acts as any letter and find searches for any command within /user/bin that follows the parameters of looking like ?r. We found what each command does using man
+
+4. /usr/bin/emacs-24.3
+commands used: ls -l /usr/bin/emacs
+	       ls -l /
+
+5. command used:/usr/bin/gcc -v
+   This gave us that the version number for /usr/bin/gcc is 4.8.5
+   command used: gcc -v
+   This gave us that the plain gcc program has a version number of 9.2.0
+
+6. command used: man chmod
+   u+sx: this command adds the execute permission to the user and sets the user ID on execution
+   o-w: this command removes the write permission for others for the specified files
+
+7. command used: find /usr/local/cs -type d -mtime -28
+/usr/local/cs
+/usr/local/cs/src/grep
+/usr/local/cs/src/grep/RCS
+/usr/local/cs/share/info
+/usr/local/cs/share/man/man1
+/usr/local/cs/bin
+There were 101 total number of these entries
+
+8. commands used: which find
+		  man find
+		  find /usr/bin -type l
+There were a total of 280 symbolic links in the same directory as find. which find determined what directory find was in, then man find gave us the commands to print all the files that are links
+
+9. commands used : cd /usr/lib64
+		   man ls
+		   ls -lt
+19408 Dec 28  2013 librom1394.so.0.3.0 is the oldest regular file in the directory. cd put us in the right directory and we used man ls to find the command to sort the files by date
+
+10.By following the command man locale, it seems the locale command follows the path of localedef where localedef defines  locale environment. 
+
+11. command used: C-h a downcase
+	downcase-dwim 
+	downcase-region 
+	downcase-word   
+ Using C-h a we can plug in a keyword help us find all commands that contain the keyword. 
+
+12. C-M-s is for regular expression search while C-M-r is for reverse regular expression search. These were found using the manual and using C-h c. 
+
+13. Using the manual within emacs, the C-g command is in charge of aborting partially typed or executing commands
+
+14. Using the manual within emacs and C-s, we can find that yank basically pastes the last stretch of text that was killed.
+
+15.Using the commands ls -l /usr/bin and C-x d /usr/bin, we can't necessarily see any visual differences. However using the dire command, we can notice that the main difference is that the dired command in emacs also gives us the current and parent directory
