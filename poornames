@@ -1,0 +1,146 @@
+#!/bin/bash
+
+test_poornames() {
+local dir="/usr/bin"
+
+    if [ $# -eq 1 ]
+	then
+        isRecursion=false
+        dir=$1 
+    else
+        isRecursion=true
+        dir=$2
+    fi
+
+    #add / if it does not already end with /
+    if [ "${dir: -1}" != '/' ]; 
+    then
+        dir="${dir}/"
+    fi
+
+    IFS=$'\n'
+    declare -a invalids
+
+    #add all filenames
+    local files=$(find $dir -maxdepth 1 -mindepth 1 -type f -exec basename {} \;)
+
+    local x
+    for x in $files
+    do
+        
+        local test=$(find $dir -maxdepth 1 -iname $x | wc -l)
+        
+	    #file name component must contain only ASCII letters, ‘.’, ‘-’, and ‘_’
+            if [ `echo $name | grep -E ^[A-Za-z._\-]+$ | wc -l` != 1 ]; 
+            then
+	        echo "${dir}${x}" 
+        #file component can not be more than 14 characters
+            elif [ ${#x} -gt 14 ]; 
+            then
+	        echo "${dir}${x}"
+        #A file name component cannot start with ‘-’
+            elif [ ${x:0:1} == '-' ]; 
+            then
+	        echo "${dir}${x}"
+        #no 2 files in the same directory can have names that differ
+            elif [ $test -gt 1 ]; 
+            then
+	        echo "${dir}${x}"
+        #Except for ‘.’ and ‘..’, a file name component cannot start with ‘.’.
+            elif [ ${x:0:1} == "." ] && [ $x != ".." ] && [ $x != "." ]; 
+            then
+	        echo "${dir}${x}"
+            fi
+ 
+    done
+
+    local dirs=$(find $dir -maxdepth 1 -mindepth 1 -type d)
+    local d
+    for d in $dirs
+    do
+    	#echo "DIR: $d"
+    	local notValid=false
+    	test=$(find $dir -maxdepth 1 -wholename $d | wc -l)
+	    #file name component must contain only ASCII letters, ‘.’, ‘-’, and ‘_’	
+    	if [[ $d = *[![A-Za-z\-\.\_]* ]]; 
+        then
+    	    notValid=true
+        #file component can not be more than 14 characters
+    	elif [ ${#d} -gt 14 ]; 
+        then
+    	    notValid=true
+    	#file name cannot begin with '-'
+    	elif [ ${d:0:1} == '-' ]; 
+        then
+    	    notValid=true
+        #no 2 files in the same directory can have names that differe
+    	elif [ $count -gt 1 ]; 
+        then
+    	    notValid=true
+    	#file component cannot start w/ '.' unless '.' or '..'
+    	elif [ $d != "." ] && [ $d != ".." ] && [ ${d:0:1} == "." ]; 
+        then
+    	    notValid=true	
+        fi
+    	if [ $notValid == true ]; 
+        then
+    	    d="${d}/"   
+    	    echo "${d}"
+    	fi
+    	if [ $isRecursion == true ] && [ $d != "." ] && [ $d != ".." ]; 
+        then
+    	   test_poornames "-r" "$d"
+    	fi
+    done
+}
+dir="asdf"
+works=false
+a1=$1
+a2=$2
+#check if the call is recursive
+if [ ${a1} == '-r' ]; 
+then
+    if [ $# -gt 2 ]; 
+    then
+    	echo "ERROR: failure status = recursive can not have more than two operands" 1>&2
+    	exit 1
+    elif [ $# -eq 1 ]; 
+    then
+    	a2='.'
+    elif [ ${a2:0:1} == '-' ]; 
+    then
+    	echo "ERROR: failure status = only one actual argument can be used/given" 1>&2
+    	exit 1
+    fi
+    works=true
+    dir=$a2
+else
+    dir=$a1
+ fi	
+
+# directory tests part of basic and recursive
+if [ -z "${dir}" ]; 
+then
+     dir='.'
+elif [ ! -d "${dir}" ]; then # not in directory 
+     echo "ERROR: failure status = not in directory" 1>&2; 
+     exit 1     
+elif [ ${dir:0:1} == '-' ]; then
+     echo "ERROR: failure status = Directory can not start with -" 1>&2;
+     exit 1
+elif [ ! -z "${a2}" ] && [ $works == false ] && [ ${a1:0:1} == '-' ]; then 
+     echo "ERROR: failure status = option doesn't exist" 1>&2
+     exit 1
+elif [ ! -r  ${dir} 1> /dev/null 2> /dev/null ]; then
+     >&2 echo "error"
+elif [ $works == false ] && [ $# -gt 1 ]; then
+     echo "ERROR: failure status = non-recursive can not have more than one operand" 1>&2
+     exit 1
+fi
+
+if [ $works == true ]; 
+then
+    test_poornames "-r" "$dir"
+else
+    test_poornames "$dir"    
+fi 

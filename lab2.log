@@ -1,0 +1,72 @@
+William Chen
+405-131-881
+
+1. export LC_ALL='C'
+This was done to make sure that we are in the standard C locale
+
+2. sort -u /usr/share/dict/words > words
+Sort the file words in /usr/share/dict on the SEASnet Linux hosts and placing it into a file named words
+
+3. wget https://web.cs.ucla.edu/classes/winter20/cs35L/assign/assign2.html
+Downloading atext file containing the HTML in the assignments web page
+
+4. Using commands given
+	tr -c 'A-Za-z' '[\n*]' < assign2.html
+		This command was used to output annything that has A-Z or a-z. Basically anything that isn't an alpha character is replaced wih a newline.
+	tr -cs 'A-Za-z' '[\n*]' < assign2.html
+		The difference between this command and the previous is that when there is more than one nonalpha characters in succession, it will only print out one newline. This is because the -c compared to -cs ignores repeats
+	tr -cs 'A-Za-z' '[\n*]' | sort < assign2.html
+		This command is all of the outputs except in alphabetical order. The outputs from the tr command are put into the sort command.
+	tr -cs 'A-Za-z' '[\n*]' | sort -u < assign2.html
+		This command will output all the words in alphabetical oder with a newline seperating the words and ignores repeats. The difference between this command and the previous one is that this one ignores repeats.
+	tr -cs 'A-Za-z' '[\n*]' < assign2.html | sort -u | comm - words
+		This command will output three seperate columns. The first column will only contain the lines that are unique to assign2 and not part of the file words. The second column includes all of the lines that are unique to words that are not part of the file assign2.html. The third column is the words that words and assign2.html have in common.
+	tr -cs 'A-Za-z' '[\n*]' | sort -u | comm -23 - words
+		This command only outputs one column that has the words that are unique to assign2.html
+
+5. wget https://www.mauimapp.com/moolelo/hwnwdshw.htm
+	This downloads the html file of the hawaiian web page
+
+6. Using commands for buildwords script
+	grep -E '<td>.+<\/td>' | \
+		This command grabs all the non-blank <td> elements from the HTML file
+	sed -n '1~2!p' | \
+		This command deletes every other line so that only the Hawaiian words are remaining
+	tr '[:upper:]' '[:lower:]' | \
+		This converts all upper case letters to lower case
+	sed 's/<\/*[a-zA-Z]*>//g' | \
+		This command removes all of the html tags
+	sed -e "s/\`/\'/g" | \
+		This command replaces all of the ASCII grave accents with ASCII apostrophe
+	sed 's/, /\n/g' \
+		This command replaces all commas with newlines
+	sed 's/ /\n/g' \
+		This command replaces all spaces with newlines
+	tr -d '[:blank:]' | \
+		This command deletes all the remaining spaces
+	sed '/-/d' | \
+	tr -cs "pk\'mnwlhaeiou" '[\n*]' | \
+		These commands remove any misspeled hawaiian words and deletes any incorrect hawaiian words
+	sort -u | \
+		Sorts the list and removes any duplicates
+	sed '/^$/d'
+		This removes any extra empty lines
+
+7. chmod u+x buildwords
+	This command allowed the user to be able to use the script and execute the script.
+
+8. ./buildwords < hwnwdshw.htm > hwords
+	This command created the file hwords using buildwords to create the hawaiian dictionary
+
+9.HAWAIIANCHECKER:
+	tr -cs "[A-Za-z]" "[\n*]" < assign2.html | tr '[:upper:]' '[:lower:]' | sort -u | comm -23 - hwords | wc -l
+		This command compares hwords to the webpage to find the number of misspelled hawaiian words. I found 534 mispelled words 
+	tr -cs "[A-Za-z]" "[\n*]" < hwords | tr '[:upper:]' '[:lower:]' | sort -u | comm -23 - hwords | wc -l
+		This command compares hwords to hwords itself to find the number of misspelled hawaiian words. Obviously, it found zero because it is comparing itself to itself
+	tr -cs "[A-Za-z]" "[\n*]" < assign2.html | tr '[:upper:]' '[:lower:]' | sort -u | comm -23 - words | wc -l
+		This command compares words to the webpage to telll us that the number of distinct misspelled words on the web page is 553.
+	I then proceded to plug these words into files called misEnglish and misHawaiian which are the misspelled english words and misspelled Hawaiian words, respectively
+	cat misEnglish | tr -cs "[A-Za-z]" '[\n*]' | sort -u | comm -12 - hwords > misEngHai
+		Using this command, I placed the words that were called misspelled english words then compared it to hwords to find the distinct words that ENLGISHCHECKER reported as misspelled but hawaiianchecker does not. There were 66 words. and some examples are: ain, al.
+	cat misHawaiian | tr -cs "[A-Za-z]" '[\n*]' | sort -u | comm -12 - hwords > misHaiEng
+                Using this command, I placed the words that were called misspelled hawaiian words then compared it to words to find the distinct words that HAWAIIANCHECKER reported as misspelled but englishchecker does not. There were 7 words and some exmaples are: au, en
