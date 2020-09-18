@@ -1,0 +1,35 @@
+William Chen
+405-131-881
+
+Lab 3
+
+1. commands used: wget ftp://ftp.gnu.org/gnu/coreutils/coreutils-8.29.tar.xz
+wget ftp://ftp.gnu.org/gnu/coreutils/coreutils-8.29.tar.xz.sig
+wget https://ftp.gnu.org/gnu/gnu-keyring.gpg
+gpg --verify --keyring ./gnu-keyring.gpg coreutils-8.29.tar.xz.sig
+First, we used the wget command to download all of the required file. We then used the gpg to verify the signature. We recieved the warning message: WARNING: This key is not certified with a trusted signature! There is no indication that the signature belongs to the owner. This most likely is a result of the fact that it is a public key and isn't directed to me. 
+
+2. commands used: tar -xf coreutils-8.29.tar.xz
+cd coreutils-8.29
+emacs INSTALL
+./configure --prefix=/u/ch/ugrad/lijay/coreutils2
+make
+make install
+The tar command was used to extract the files and then place it into another directory called coreutils-8.29. The cd command allowed us to enter the coreutils-8.29 directory. We then use emacs to check the INSTALL file so that we learn how to install the file. The next command was based on the intsructions recieved from emacs INSTALL. Using the ./configure and --prefix we can specify an aboslute path for where to install, instead of defaulting to /usr/local/bin. THe make command compiles the package and make install installs the program. I did not run into any problems while running these commands and installing the program and creating a copy. 
+
+3. command used: coreutil2/bin/ls -aA
+After swiching back to the default directory, we can reproduce the bug by using this command. The directories '.' and '..' are listed with the other directories which means that -a overrides -A and we don't want it to output '.' and '..'.
+
+4. commands used: emacs patch.diff
+patch -p1 < patch.diff
+After switching back to the coreutils-8.29, we used the firsts emacs command to create the file patch.diff. This allows us to copy the patch from message #10 to the file. This then allows us to use the next command to apply the patch.
+
+5.command: autoreconf --force --install
+This command was used to update our make configurations
+command: make
+This was used to compile the package.
+
+6. commands used: make install
+coreutil2/bin/ls -aA
+The make install command iinstalls the programs and documentation. After going back to the default directory, we reran the command to see if the bug was patched and it was. 
+

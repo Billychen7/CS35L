@@ -1,0 +1,32 @@
+William Chen
+405-131-881
+
+HW 1
+
+Q1. The patch improves the performance of ls because the command's performance is significantly more consistent with the order of the flags, so its outcome is more predictable. the -aA command is also technically worse in terms of the time performance because an extra check is made to not display the two directories ('.' and '..'). 
+
+Q2. If my company were to adopt this patched version of Coreutils, I would also watch out for anything that could have been overriden or also removed due to the patch that wasn't intended.
+
+Q3. If you were to run the script with an empty file like /de/null, the following error message appears:
+File "./randline.py", line 70, in <module>
+    main()
+  File "./randline.py", line 64, in main
+    sys.stdout.write(generator.chooseline())
+  File "./randline.py", line 34, in chooseline
+    return random.choice(self.lines)
+  File "/usr/lib64/python2.7/random.py", line 274, in choice
+    return seq[int(self.random() * len(seq))]  # raises IndexError if seq is empty
+IndexError: list index out of range
+
+This causes an error becuase chooseline() is unable to retrieve anything because the file is empty. the chooseline() function also calls the random.choice() as an input but random.choice() raisese an IndexError.
+
+Q4. If the script was usd with Python 3 instead of Python 2, it gives the following error:
+File "randline.py", line 65
+    except IOError as (errno, strerror):
+                      ^
+SyntaxError: invalid syntax
+
+It gives this error because line 65 is not a valid Python 3 code. The line says 'except IOError as (errno, strerror):' when in python 3 it would be 'except IOError as err:'
+
+Q5. After running the program with python 2 instead of python 3, a few syntax errors showed up because certain commands are not available in python 2 but are avavailable in python 3.
+ 
