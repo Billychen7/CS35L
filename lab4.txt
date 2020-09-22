@@ -1,0 +1,131 @@
+William Chen
+405-131-881
+
+Lab 4
+
+1. command used: wget https://web.cs.ucla.edu/classes/winter20/cs35L/assign/coreutils-with-bug.tar.gz
+This command was used to download the tar file for coreutils-with-bug
+
+2. command used: tar -xf coreutils-with-bug.tar.gz
+We used this tar command to remove the files from the file and archive the files and create a directory named coreutils-with-bug
+
+3. command used: cd coreutils-with-bug
+With this we move into the directory coreutils-with-bug
+
+4. command used: ./configure --prefix=/u/ms/ugrad/lijay/coreutils
+We want to configure the script so using the emacs instructions we recieved last time we set an absolute path for the installation and create a Makefile in each directory of the package. 
+
+5. command used: make
+This command compiless the package. We recieved the following error
+In file included from utimecmp.c:41:
+utimens.h:2:5: error: conflicting types for 'futimens'
+    2 | int futimens (int, char const *, struct timespec const [2]);
+      |     ^~~~~~~~
+In file included from utimecmp.h:25,
+                 from utimecmp.c:25:
+/usr/include/sys/stat.h:373:12: note: previous declaration of 'futimens' was here
+  373 | extern int futimens (int __fd, const struct timespec __times[2]) __THROW;
+      |            ^~~~~~~~
+
+This problem was caused because we tried to redefine the same function but with different parameters.
+
+6. command used: wget https://web.cs.ucla.edu/classes/winter20/cs35L/assign/coreutils.diff
+We download the patch that was given on the website.
+
+7. command used: patch -p0 < coreutils.diff
+This applies th patch while the -p0 gts rid of the smalleest prefix containing 0 leading slashes.
+
+8. command used: make
+This command compiles the package. We did not receive any error this time. 
+This is due to us fixing the problem in which we define different functions with the same name.
+futimens was changed to coreutils_futimens and tee was changed to coreutils_tee. 
+
+9. command used: make install
+This command installs the package. 
+
+10. commands used: tmp=$(mktmp -d)
+cd $tmp
+touch -d '1918-11-11 11:00 GMT' wwi-armistice-cs35L
+touch now
+sleep 1
+touch now1
+TZ=UTC0 ls -lt --full-time wwi-armistice-cs35L now now1
+This command printed out the following:
+-rw-r--r-- 1 lijay msugrad 0 1918-11-11 11:00:00.000000000 +0000 wwi-armistice
+-rw-r--r-- 1 lijay msugrad 0 2020-02-10 00:40:32.645037249 +0000 now1
+-rw-r--r-- 1 lijay msugrad 0 2020-02-10 00:40:28.426907731 +0000 now
+
+11. DEBUGGING
+gdb ~/coreutil/bin/ls
+We use the gdb debugger to determine the location of the bug
+break main
+run -lt --full-time /tmp/tmp.HtCcE8DEn5
+By running these commands we can go directly to the breakpoiont that we set, which is at the beginning of the main method.
+next (many times)
+break sort_files
+continue
+step (many times)
+break comparee_mtime
+continue
+break cmp_mtime
+continue
+list
+break timespec_cmp
+continue
+list
+We ran all of these command to look through the code to see where the bug was in the code. 
+As we reach this point, we list out the contents of the function:
+
+int diff = a.tv_sec - b.tv_sec;
+(gdb) s
+49	  return diff ? diff : a.tv_nsec - b.tv_nsec;
+
+Judging off of this code and the time difference between wwi-armistice-cs35L and now and now1, we can infer that the issue comes from an  integer overflow.
+If wwe look at the times listed earlier, the time for the wwi-armistice-cs35L is significantly later than the other two, yet is listed as if it waas earlier. 
+
+12.FIXING THE BUG
+quit
+cd ~
+cp coreutils-with-bug/lib/timespec.h timespec.h
+emacs timespec.h
+Within emacs, we are able to edit the timespec_cmp so that we have a direct comparison which allows us to prevent overflow
+diff -u coreutils-with-bug/lib/timespec.h timespec.h > coreutils-with-bug/lab4.diff
+With this we create a patch file which edits the code.
+cd coreutils-with-bug
+emacs lab4.diff
+C-x 4-a
+We edit the file so that it is in the form of a ChangeLog Entry. Using C-x 4-a we are able to add a Changelog.
+patch -p0 < lab4.diff
+This command applies the patch so we can verify that it works.
+make
+make install
+Now that we have installed the proper patched bug, we can check using a temporary directory to see if it worked.
+cd $tmp
+touch -d '1918-11-11 11:00 GMT' wwi-armistice-cs35L
+touch now
+sleep 1
+touch now1
+TZ=UTC0 ls -lt --full-time wwi-armistice-cs35L now now1
+Now, we see the following:
+-rw-r--r-- 1 lijay msugrad 0 2020-02-10 00:40:32.645037249 +0000 now1
+-rw-r--r-- 1 lijay msugrad 0 2020-02-10 00:40:28.426907731 +0000 now
+-rw-r--r-- 1 lijay msugrad 0 1918-11-11 11:00:00.000000000 +0000 wwi-armistice
+Now the wwi-armistice is now in the correct position and it is not being treated as if the tiime was negative. 
+
+13. TESTING ON SEASNET
+touch -d '1918-11-11 11:00 GMT' wwi-armistice-cs35L
+touch now
+sleep 1
+touch now1
+TZ=UTC0 ls -lt --full-time wwi-armistice-cs35L now now1
+
+This outputs the following:
+-rw-r--r-- 1 lijay msugrad 0 2054-12-17 17:28:16.000000000 +0000 wwi-armistice-cs35L
+-rw-r--r-- 1 lijay msugrad 0 2020-02-10 01:36:45.167428000 +0000 now1
+-rw-r--r-- 1 lijay msugrad 0 2020-02-10 01:36:36.791645000 +0000 now
+
+Here is when we notice that there is an error. 
+It seems to think that the wwi-armistice-cs35L file is from the future, similar to the problem we had earlier.
+Not only does it print it first it also changes the time in which it thinks it is being printed.
+It seems to consider the date as being negative time because it dates so far back that it interprets the time as positive and outputs the future.
+
