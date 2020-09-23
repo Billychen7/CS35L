@@ -1,0 +1,117 @@
+William Chen
+405-131-881
+
+Lab 5
+
+1. Write the tr2b.c and tr2u.c programs and then compile them.
+
+2. command used: dd if=/dev/urandom of=input.txt bs=1M count=5
+This command was used to create a large file that we could use for testing. 
+
+3. command used: strace -cf ./tr2b 'a\n-' 'z@m+' < input.txt > tr2boutput.txt
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 78.33    0.000535           1       640           write
+ 21.67    0.000148           0       642           read
+  0.00    0.000000           0         2           open
+  0.00    0.000000           0         2           close
+  0.00    0.000000           0         4           fstat
+  0.00    0.000000           0         9           mmap
+  0.00    0.000000           0         4           mprotect
+  0.00    0.000000           0         1           munmap
+  0.00    0.000000           0         1           brk
+  0.00    0.000000           0         1         1 access
+  0.00    0.000000           0         1           execve
+  0.00    0.000000           0         1           arch_prctl
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.000683                  1308         1 total
+
+This command printed the above output which measures the system calles made by tr2b and copies one file to another. 
+There were 1308 system calls.
+
+4. command used: strace -cf ./tr2u 'a\n-' 'z@m+' < input.txt > tr2uoutput.txt
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 54.87   25.223841           5   5242880           write
+ 45.10   20.733486           4   5242882           read
+  0.02    0.010780           4      2486           brk
+  0.00    0.000000           0         2           open
+  0.00    0.000000           0         2           close
+  0.00    0.000000           0         2           fstat
+  0.00    0.000000           0         7           mmap
+  0.00    0.000000           0         4           mprotect
+  0.00    0.000000           0         1           munmap
+  0.00    0.000000           0         1         1 access
+  0.00    0.000000           0         1           execve
+  0.00    0.000000           0         1           arch_prctl
+------ ----------- ----------- --------- --------- ----------------
+100.00   45.968107              10488269         1 total
+
+This command printed out the above output whcih measures the system calls made by tr2u when copying one file to another.
+
+5. command used: strace -cf ./tr2b 'a\n-' 'z@m+' < input.txt
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 97.69    0.134837           6     20842           write
+  2.13    0.002946           5       642           read
+  0.06    0.000084           9         9           mmap
+  0.05    0.000071          18         4           mprotect
+  0.02    0.000029           7         4           fstat
+  0.02    0.000024          24         1           munmap
+  0.01    0.000016           8         2           open
+  0.01    0.000015           8         2           close
+  0.01    0.000007           7         1           arch_prctl
+  0.00    0.000000           0         1           brk
+  0.00    0.000000           0         1         1 access
+  0.00    0.000000           0         1           execve
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.138029                 21510         1 total
+This command printed the output above which measures the system calls made by tr2b when copying a file to my terminal.
+
+6. command used: strace -cf ./tr2u 'a\n-' 'z@m+' < input.txt
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 55.50   31.246983           6   5242880           write
+ 44.48   25.044338           5   5242882           read
+  0.02    0.013213           5      2486           brk
+  0.00    0.000043          11         4           mprotect
+  0.00    0.000023          23         1           munmap
+  0.00    0.000021           3         7           mmap
+  0.00    0.000007           7         1           arch_prctl
+  0.00    0.000000           0         2           open
+  0.00    0.000000           0         2           close
+  0.00    0.000000           0         2           fstat
+  0.00    0.000000           0         1         1 access
+  0.00    0.000000           0         1           execve
+------ ----------- ----------- --------- --------- ----------------
+100.00   56.304628              10488269         1 total
+This command printed the output above and measures the system calls made by tr2u when copying a file to my terminal.
+
+tr2u makes many more calls than tr2b.
+
+7. command used: time ./tr2b 'a\n-' 'z@m+' < input.txt > tr2boutput2.txt
+This command measured the speed of tr2b when copying one file to another.
+real	0m0.901s
+user	0m0.837s
+sys	0m0.020s
+
+8. command used: time ./tr2u 'a\n-' 'z@m+' < input.txt > tr2uoutput2.txt 
+This command measured the speed of tr2u when copying one file to another. 
+real	0m13.363s
+user	0m3.763s
+sys	0m9.556s
+
+9. command used: time ./tr2b 'a\n-' 'z@m+' < input.txt
+This command measured the speed of tr2b when coping a file to my terminal.
+real	0m1.256s
+user	0m0.962s
+sys	0m0.178s
+
+10. command used: time ./tr2u 'a\n-' 'z@m+' < input.txt
+This command measured the speed of tr2u when copying a file to my terminal.
+real	0m25.396s
+user	0m7.745s
+sys	0m17.605s
+
+
+From the times, we can determine that tr2u is much slower than tr2b because it has so many more system calls. Therefore, unbuffered I/O is definitely much slower than buffered I/O. 
