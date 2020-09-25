@@ -1,0 +1,95 @@
+Lab 8: Git spelunking
+
+William Chen
+405-131-881
+
+1. du -sh ~eggert/src/gnu/emacs-CS-35L
+The total amount of disk space used for the working files in this directory is 509M bytes, or 509MB
+du -sh .git
+The total amount of disk space used for the working files in .git is 350M bytes, or 350MB
+By doing du .git we can see the distribution of how much disk space is used for what
+The .git/objects take up the most space because the objects directory stores all the content for your database
+
+2. git branch --list -r | wc -l
+We see that the number of remote branches is 177
+git branch --list | wc -l
+We see that the number of local branches is 176
+
+3. git remote
+Running this command shows us all of the remote repositories, which turns out to only be origin.
+git remote show 
+Output:
+origin
+Running this command shows us where origin is from as well as the branches
+Output:
+remote origin
+  Fetch URL: https://git.savannah.gnu.org/git/emacs.git
+  Push  URL: https://git.savannah.gnu.org/git/emacs.git 
+
+4. git for-each-ref --count=10 --sort=-committerdate refs/heads/
+This command was used to print the 10 local branches that were mosts recently commited to.
+Output:
+19aecd340b7b3ab54629b790ba70a90130bad63d commit	refs/heads/master
+d2873706749ef68803e79bab6109a534f4c9d23a commit	refs/heads/scratch/joaot/make-completion-at-point-function
+dd3fa9411a28175f9a1a984a69cfa7162023c5df commit	refs/heads/feature/windows-with-utils
+8f22251e595d7598d6643b0d24bf5f409dc59fa8 commit	refs/heads/scratch/completion-api
+8a4de19dfb52551a65c360a9346ede137d0fc6e8 commit	refs/heads/scratch/a-modest-completion-redesign-proposal
+2b0f589134d9427a96ab8cf0d8473715740984ef commit	refs/heads/scratch/fido-mode
+924a4201d24c10c48db920815ebf98dfaadc1e85 commit	refs/heads/feature/gnus-select2
+7a10082093791f0e035e4f9f95a774a7be1cd586 commit	refs/heads/feature/extend_face_id
+079461b360a2467ff4ab2ec57516c6f9e45f50fe commit	refs/heads/scratch/jit-lock-antiblink-cleaned-up
+55dcd32ad2209dc34bfb6b713bf73be9bf4c4cb2 commit	refs/heads/emacs-26
+
+5. git rev-list --count master
+This returns the count for commits in the master branch
+Output:
+139583
+
+6. git rev-list --count --all
+This returns the count for commits for any braanch
+Output
+143910
+The percentage of commitss that are in the master branch can be calculated with 139583/143910*100% = 96.993%
+
+7. git shortlog -s -n --since=2013-01-01
+This command gives a "summarized" list of the git log output. It allows us to see which ten people authored the most commit sfrom 2013 and later and how many
+Output:
+  3691  Eli Zaretskii
+  3644  Glenn Morris
+  3604  Paul Eggert
+  1806  Lars Ingebrigtsen
+  1784  Stefan Monnier
+  1571  Michael Albinus
+   619  Dmitry Gutov
+   576  Noam Postavsky
+   471  Alan Mackenzie
+   469  Juri Linkov
+
+8.
+		  4ea37c
+		/	\
+	       /	 \
+	   977cd	625cee
+	    |		   |
+	   ...		  ...
+	    |		   |
+	    |		 5490cc
+       	    |	 	 /    \	
+	    |		...   ...
+	    |	       /  \
+	    |	     /	   \
+	    |	   / 	    \
+ 	     0c06b	     \
+	     |	             ...	
+	     |			\
+	     |			820739
+	     |			/    \
+	    ...		      ...   00e4e3
+	     |			      |
+	     |			    49cd5
+	     |			   /	 \
+	   abcb2e-------------------	...
+	     |				   \
+	    ...				    \
+	     |				    |	
+	  98ac36----------------------------	
