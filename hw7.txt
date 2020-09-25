@@ -1,0 +1,86 @@
+Homework 7
+Verifying and publishing a backported change
+
+William Chen
+405-131-881
+
+1. git clone https://git.savannah.gnu.org/git/diffutils.git diffutilshw7
+cd diffutilshw7
+git checkout v3.0 -b quote
+We check out 3.0 into a new branch named quote
+We get the following output:
+Switched to a new branch 'quote'
+
+2.patch -p1 < ../quote-3.0-patch.txt
+We install our patch onto this new branch 
+We get the following output:
+patching file src/cmp.c
+patching file src/diff.c
+patching file src/diff3.c
+patching file src/dir.c
+patching file src/sdiff.c
+patching file src/util.c
+
+3. Learn how to use  add-change-log-entry-other-window 
+
+4. emacs fileName
+C-x 4 a
+C-x C-c
+
+We used the add-change-log-entry-other-window to create a ChngeLog entry for our patch adapting the original change log.
+We open the 6 files using emacs
+Then we pasted thee content from the origanl entry in git-log.txt
+
+5. git add .
+git commit -F ChangeLog
+We commit our changes and get the following output:
+[quote c84e4ad] 2020-03-01  William Li-Jay Chen  <lijay@lnxsrv07.seas.ucla.edu>
+ Committer: William Li-Jay Chen <lijay@lnxsrv07.seas.ucla.edu>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 6 files changed, 43 insertions(+), 43 deletions(-)
+
+6. Test using new repository
+git clone https://git.savannah.gnu.org/git/diffutils.git diffutilshw7test
+cd diffutilshw7test
+git checkout v3.0 -b quote
+git am < ~/diffutilshw7/formatted-patch.txt
+./bootstrap
+wget https://web.cs.ucla.edu/classes/winter20/cs35L/assign/diffutils-gets.diff
+patch -p0 < diffutils-gets.diff 
+./configure
+make
+make check
+Here we make a whole new repository to test our patch works
+We apply the patch using git am and build the result
+Then, we check if it works using make check
+
+7. make distdir
+cd diffutils-3.0.1-a360 
+emacs ChangeLog
+To make sure that our ChangLog entry works, we run the make distdir command and look at the ChangeLog file.
+ We can see our formatted patch ChangeLog
+
+8. ssh -x lijay@lnxsrv07.seas.ucla.edu
+export PATH=/usr/local/cs/bin:$PATH
+cd ~eggert/src/gnu/emacs
+gitk
+
+The first thing that was noticed was that the screen is divided into windows. Top Row:
+	Left: Here is a record of all of the commits in list view, as well as their corresponding relationships with branches
+	Middle: Here we see the author of each coommit and their email address
+	Right: This window shows the date of each commit
+Middle Bar: Here we see the SHA1 ID for each commit and thier row and a search bar
+Bottom Row:
+	Left: Here we see the details of the commit that we select, showing the changelog of the commits
+	Right: Here we see which files were modified by the commit
