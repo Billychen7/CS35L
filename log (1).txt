@@ -1,0 +1,74 @@
+Assignment 9:SSH setup and use in applications
+
+Lab 9
+
+William Chen
+405-131-881
+
+1.ssh lijay@lnxsrv09.seas.ucla.edu
+Enter lnxsrv09 to see if we can enter lnxsrv07 using key
+
+2. ssh-keygen
+Generate a key, and I  left it in /.ssh/id_rsa, the default path. 
+Entered a passphrase and saved it
+Output:
+Your identification has been saved in /u/ms/ugrad/lijay/.ssh/id_rsa.
+Your public key has been saved in /u/ms/ugrad/lijay/.ssh/id_rsa.pub.
+The key fingerprint is:
+SHA256:PFnDgUvkQjphrJ2FyxlaBcs6kitn1mMoSPjDh2ysdmQ lijay@lnxsrv09.seas.ucla.edu
+The key's randomart image is:
++---[RSA 2048]----+
+|   .++o....      |
+|   o==..o. .     |
+|   *=*....+      |
+|..o.*. o.o .     |
+|+.o     S        |
+|oB E     .       |
+|= / =            |
+|.O = .           |
+|o .              |
++----[SHA256]-----+
+
+ls -l ~/.ssh
+Here we see what is created in the .ssh directory when we call this and this is 
+-rw------- 1 lijay msugrad  410 Mar 11 23:18 authorized_keys
+-rw------- 1 lijay msugrad 1766 Mar 11 23:10 id_rsa
+-rw-r--r-- 1 lijay msugrad  410 Mar 11 23:10 id_rsa.pub
+-rw-r--r-- 1 lijay msugrad  977 Mar 12 02:11 known_hosts
+We can also see that we have read and write permissions
+
+
+3. ssh-copy-id lijay@lnxsrv07.seas.ucla.edu
+This command installs an SSH key on a server as an authorized key.
+The command modifies the ~/.ssh/authorized_keys file
+Output:
+/usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: "/u/ms/ugrad/lijay/.ssh/id_rsa.pub"
+/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
+/usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
+lijay@lnxsrv07.seas.ucla.edu's password: 
+
+Number of key(s) added: 1
+
+4. ssh lijay@lnxsrv07.seas.ucla.edu
+Now we test to see if the key works. This command prompts us to enter the passphrase.
+This leads us into lnxsrv07, so we know the key worked. 
+
+5. ssh lijay@lnxsrv09.seas.ucla.edu
+After exiting lnxsrv07(dropping all connections), we go back into lnxsrv09 to see if we can use ssh-agent.
+
+6. eval "$(ssh-agent -s)"
+ssh-add
+We start the ssh-agent in the client and add our private key to the ssh-agent
+
+7. ssh lijay@lnxsrv07.seas.ucla.edu
+This time, when we use ssh into lnxsrv07, we are not prompted for a passphrase.
+
+8. ssh -X lijay@lnxsrv07.seas.ucla.edu
+xeyes
+By running ssh -X and xeyes, we are able to see a graphic window with eyes that follow the mouse in all directions. 
+
+9. ssh -A lijay@lnxsrv07.seas.ucla.edu
+ssh -A lnxsrv09
+ssh -A lnxsrv10
+By using ssh -A, we are able to enable agent forwarding. By doing this, we can perform multihop/daisy chain. By simply imputting the passphrase, we can easily switch between linux servers 
+ 

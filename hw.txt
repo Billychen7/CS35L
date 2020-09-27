@@ -1,0 +1,20 @@
+William Chen
+405-131-881
+
+Assignment 9: SSH setup and use in applications
+
+1. In this scenario, my resulting network would still be secure. The messages arer still encrypted by the public keys. 
+Our computers have the private keys to be able to decrypt the messages, so they can not decrypt our messages.
+
+(1) If the other teams had tapped our keyboards and obtained the keystrokes, then the network would end up insecure. They would have access to the passphrase.
+This means that they could decrypt all data and log in and access files.
+
+(2) If they had access to the USB, the answer would also change. The network definitely won't be secure.
+They will have access to the ssh folder and be able to access the private key.
+They can decrypt the messages
+
+2. gpg --verify can not verify the ownership. All it does is compare the decrypted signature to the decrypted data. 
+As a result, the attacker can change the information for the message and then make a detached signature that matches another file. 
+
+I would probably entrust a third party to keep track of my public key. They would be able to use a certificate to maintain a record of the original file.
+This way, if the data is tampered with, we would know that someone has edited the file. 
